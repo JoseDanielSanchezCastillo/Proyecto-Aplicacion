@@ -147,23 +147,42 @@ def crear_tabla(centros_educativos, provincia):
             }
         )
 
-@st.cache_data
-def crear_grafico_densidad_centros(_cantones):
+def crear_grafico_densidad_centros(_cantones, tipo_institucion='Todos'):
     """Gráfico comparativo de densidad y total de centros educativos por cantón"""
 
     if _cantones.empty or len(_cantones) <= 1:
         return None
     
+    # Determinar qué columnas usar según el tipo de institución
+    if tipo_institucion == 'PÚBLICO':
+        columna_total = 'TOTAL_CENTROS_EDUCATIVOS_PUBLICOS'
+        titulo_sufijo = ' (Públicos)'
+    elif tipo_institucion == 'PRIVADO':
+        columna_total = 'TOTAL_CENTROS_EDUCATIVOS_PRIVADO'
+        titulo_sufijo = ' (Privados)'
+    else:
+        columna_total = 'TOTAL_CENTROS_EDUCATIVOS'
+        titulo_sufijo = ''
+    
+    # Calcular densidad específica si se filtra por tipo
+    if tipo_institucion != 'Todos':
+        _cantones = _cantones.copy()
+        densidad_col = f'DENSIDAD_{tipo_institucion}_KM2'
+        _cantones[densidad_col] = _cantones[columna_total] / _cantones['AREA_KM2']
+        columna_densidad = densidad_col
+    else:
+        columna_densidad = 'DENSIDAD_CENTROS_EDUCATIVOS_KM2'
+    
     # Ordenar cantones por densidad de centros educativos
-    cantones_ordenados = _cantones.sort_values('DENSIDAD_CENTROS_EDUCATIVOS_KM2', ascending=False)
+    cantones_ordenados = _cantones.sort_values(columna_densidad, ascending=False)
     
     grafico = make_subplots(specs=[[{"secondary_y": True}]])
     
     # Traza de barras para la densidad de centros educativos
     grafico.add_trace(
         go.Bar(x=cantones_ordenados['CANTÓN'], 
-               y=cantones_ordenados['DENSIDAD_CENTROS_EDUCATIVOS_KM2'],
-               name='Densidad (centros educativos/km²)',
+               y=cantones_ordenados[columna_densidad],
+               name=f'Densidad {tipo_institucion.lower() if tipo_institucion != "Todos" else ""} (centros/km²)',
                marker_color='#84bce0'),
         secondary_y=False,
     )
@@ -171,8 +190,8 @@ def crear_grafico_densidad_centros(_cantones):
     # Traza de linea para el total de centros educativos
     grafico.add_trace(
         go.Scatter(x=cantones_ordenados['CANTÓN'], 
-                   y=cantones_ordenados['TOTAL_CENTROS_EDUCATIVOS'],
-                   name='Total de centros educativos',
+                   y=cantones_ordenados[columna_total],
+                   name=f'Total de centros educativos{titulo_sufijo}',
                    line=dict(color='#101b49', width=2),
                    mode='lines+markers'),
         secondary_y=True,
@@ -180,7 +199,7 @@ def crear_grafico_densidad_centros(_cantones):
     
     # Configuración del layout
     grafico.update_layout(
-        title_text='Densidad por km² y total de centros educativos por cantón',
+        title_text=f'Densidad por km² y total de centros educativos{titulo_sufijo} por cantón',
         xaxis_tickangle=-45,
         height=500,
         showlegend=True
@@ -188,16 +207,26 @@ def crear_grafico_densidad_centros(_cantones):
     
     grafico.update_xaxes(title_text="Cantón")
     grafico.update_yaxes(title_text="Densidad (centros educativos/km²)", secondary_y=False)
-    grafico.update_yaxes(title_text="Total de centros educativos", secondary_y=True)
+    grafico.update_yaxes(title_text=f"Total de centros educativos{titulo_sufijo}", secondary_y=True)
     
     return grafico
 
-@st.cache_data
-def crear_grafico_densidad_poblacional(_cantones):
+def crear_grafico_densidad_poblacional(_cantones, tipo_institucion='Todos'):
     """Gráfico comparativo de densidad poblacional y total de centros educativos por cantón"""
 
     if _cantones.empty or len(_cantones) <= 1:
         return None
+    
+    # Determinar qué columnas usar según el tipo de institución
+    if tipo_institucion == 'PÚBLICO':
+        columna_total = 'TOTAL_CENTROS_EDUCATIVOS_PUBLICOS'
+        titulo_sufijo = ' (Públicos)'
+    elif tipo_institucion == 'PRIVADO':
+        columna_total = 'TOTAL_CENTROS_EDUCATIVOS_PRIVADO'
+        titulo_sufijo = ' (Privados)'
+    else:
+        columna_total = 'TOTAL_CENTROS_EDUCATIVOS'
+        titulo_sufijo = ''
     
     # Ordenar cantones por densidad poblacional
     cantones_ordenados = _cantones.sort_values('DENSIDAD_POBLACIONAL_KM2', ascending=False)
@@ -216,15 +245,15 @@ def crear_grafico_densidad_poblacional(_cantones):
     # Traza de linea para el total de centros educativos
     grafico.add_trace(
         go.Scatter(x=cantones_ordenados['CANTÓN'], 
-                   y=cantones_ordenados['TOTAL_CENTROS_EDUCATIVOS'],
-                   name='Total de centros educativos',
+                   y=cantones_ordenados[columna_total],
+                   name=f'Total de centros educativos{titulo_sufijo}',
                    line=dict(color='#101b49', width=2),
                    mode='lines+markers'),
         secondary_y=True,
     )
     
     grafico.update_layout(
-        title_text='Densidad poblacional y total de centros educativos por cantón',
+        title_text=f'Densidad poblacional y total de centros educativos{titulo_sufijo} por cantón',
         xaxis_tickangle=-45,
         height=500,
         showlegend=True
@@ -232,7 +261,7 @@ def crear_grafico_densidad_poblacional(_cantones):
     
     grafico.update_xaxes(title_text="Cantón")
     grafico.update_yaxes(title_text="Densidad poblacional (habitantes/km²)", secondary_y=False)
-    grafico.update_yaxes(title_text="Total de Centros Educativos", secondary_y=True)
+    grafico.update_yaxes(title_text=f"Total de Centros Educativos{titulo_sufijo}", secondary_y=True)
     
     return grafico
 
@@ -242,7 +271,7 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
     cantones_wgs84 = cantones_gdf.to_crs(epsg=4326)
     cantones_simple = simplificar_geometrias(cantones_wgs84, tolerancia=0.002)
     
-    # Redondear valores para mejorar visualización
+    # Redondear valores para mejorar visualización (MANTENIENDO LAS CAPAS ORIGINALES)
     cantones_simple = cantones_simple.copy()
     cantones_simple['Densidad (centros/km²)'] = cantones_simple['DENSIDAD_CENTROS_EDUCATIVOS_KM2'].round(4)
     cantones_simple['Centros por 10k hab'] = cantones_simple['CENTROS_EDUCATIVOS_10K_HABITANTES'].round(2)
@@ -260,7 +289,7 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
         tiles='OpenStreetMap'
     )
     
-    # Capa 1: Densidad de centros educativos por cantón
+    # Capa 1: Densidad de centros educativos por cantón (MANTENIENDO LA ORIGINAL)
     cantones_simple.explore(
         m=m,
         column='Densidad (centros/km²)',
@@ -285,7 +314,7 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
         show=False
     )
     
-    # Capa 2: Centros Educativos por cada 10000 habitantes 
+    # Capa 2: Centros Educativos por cada 10000 habitantes (MANTENIENDO LA ORIGINAL)
     cantones_simple.explore(
         m=m,
         column='Centros por 10k hab',
@@ -310,10 +339,14 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
         show=False
     )
     
+    # MODIFICACIÓN: Filtrar centros educativos según el tipo de institución seleccionado
+    centros_filtrados = centros_educativos
+    if tipo_institucion != 'Todos':
+        centros_filtrados = centros_educativos[centros_educativos['TIPO_INSTI'] == tipo_institucion]
+    
     # Capa 3: Centros educativos públicos
     if tipo_institucion in ['Todos', 'PÚBLICO']:
-
-        centros_publicos = centros_educativos[centros_educativos['TIPO_INSTI'] == 'PÚBLICO']
+        centros_publicos = centros_filtrados[centros_filtrados['TIPO_INSTI'] == 'PÚBLICO']
         marcadores_centros_publicos = folium.FeatureGroup(name='Centros Educativos Públicos', show=True)
         
         for _, centro in centros_publicos.iterrows():
@@ -340,7 +373,7 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
     
     # Capa 4: Centros educativos privados
     if tipo_institucion in ['Todos', 'PRIVADO']:
-        centros_privados = centros_educativos[centros_educativos['TIPO_INSTI'] == 'PRIVADO']
+        centros_privados = centros_filtrados[centros_filtrados['TIPO_INSTI'] == 'PRIVADO']
         marcadores_centros_privados = folium.FeatureGroup(name='Centros Educativos Privados', show=True)
         
         for _, centro in centros_privados.iterrows():
@@ -472,7 +505,7 @@ def fragmento_tabla(centros_educativos_filtrados, provincia_seleccionada):
     crear_tabla(centros_educativos_filtrados, provincia_seleccionada)
 
 @st.fragment
-def fragmento_graficos(cantones_filtrados):
+def fragmento_graficos(cantones_filtrados, tipo_institucion):
     """Fragmento para ambos gráficos con pestañas"""
 
     st.subheader("Gráficos comparativos")
@@ -483,7 +516,7 @@ def fragmento_graficos(cantones_filtrados):
     # Grafico de densidad por km² y el total de Centros Educativos
     with pestana1:
         st.markdown("### Comparación entre la densidad por km² y el total de Centros Educativos por cantón")
-        grafico = crear_grafico_densidad_centros(cantones_filtrados)
+        grafico = crear_grafico_densidad_centros(cantones_filtrados, tipo_institucion)
         if grafico:
             st.plotly_chart(grafico, width='stretch')
         else:
@@ -492,7 +525,7 @@ def fragmento_graficos(cantones_filtrados):
     # Grafico de densidad poblacional y el total de Centros Educativos
     with pestana2:
         st.markdown("### Comparación entre la densidad poblacional y el total de Centros Educativos por cantón")
-        grafico = crear_grafico_densidad_poblacional(cantones_filtrados)
+        grafico = crear_grafico_densidad_poblacional(cantones_filtrados, tipo_institucion)
         if grafico:
             st.plotly_chart(grafico, width='stretch')
         else:
@@ -745,7 +778,7 @@ def main():
         fragmento_tabla(centros_educativos_filtrados, provincia_seleccionada)
     
     with pestanas_graficos:
-        fragmento_graficos(cantones_filtrados)
+        fragmento_graficos(cantones_filtrados, tipo_institucion)
     
     with pestanas_mapa:
         fragmento_mapa(cantones_filtrados, centros_educativos_filtrados, tipo_institucion)
