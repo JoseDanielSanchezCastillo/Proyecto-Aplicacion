@@ -23,10 +23,10 @@ Los datos están disponibles a través del servicio web de **ArcGIS Server**, me
 
 Con el objetivo de facilitar el análisis estadístico y geográfico, ambas capas fueron consolidadas en un único archivo CSV, dado que comparten la misma estructura y columnas de información.
 
-1.2 Cantones de Costa Rica
+### 1.2 Cantones de Costa Rica
 El conjunto de datos contiene las geometrías de los 82 cantones de Costa Rica. Este archivo permite realizar operaciones espaciales para determinar a qué cantón pertenece cada centro educativo y calcular métricas de densidad por área. Los datos fueron obtenidos del [Instituto Geográfico Nacional (IGN)](https://www.ign.gob.cr/).
 
-1.3 Población y vivienda por cantón
+### 1.3 Población y vivienda por cantón
 El conjunto de datos contiene datos demográficos por cantón, incluyendo la población total. Estos datos permiten calcular indicadores como la densidad poblacional y el número de centros educativos por cada 10,000 habitantes. Los datos fueron obtenidos del [Instituto Nacional de Estadística y Censos (INEC)](https://inec.cr).
 
 ## 2. Descripción de sus principales variables: Centros Educativos de Costa Rica
