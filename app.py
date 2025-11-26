@@ -293,7 +293,7 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
         legend=True,
         legend_kwds={'caption': 'Centros educativos por 10,000 habitantes'},
         tooltip=['CANTÓN', 'PROVINCIA', 'Total Centros', 'Centros Públicos', 
-                 'Centros Privados', 'Centros por 10k hab', 'Densidad poblacional (hab/km²)'],
+                 'Centros Privados', 'Centros por 10k hab'],
         popup=['CANTÓN', 'PROVINCIA', 'Total Centros', 'Centros Públicos', 
                'Centros Privados', 'Centros por 10k hab'],
         style_kwds={
