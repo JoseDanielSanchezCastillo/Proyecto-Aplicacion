@@ -272,12 +272,12 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
         popup=['CANTÓN', 'PROVINCIA', 'Total Centros', 'Centros Públicos', 
                'Centros Privados', 'Densidad (centros/km²)'],
         style_kwds={
-            'fillOpacity': 0.6,
+            'fillOpacity': 0.85,
             'weight': 1,
             'color': 'gray'
         },
         highlight_kwds={
-            'fillOpacity': 0.9,
+            'fillOpacity': 0.85,
             'weight': 3,
             'color': 'black'
         },
@@ -297,12 +297,12 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
         popup=['CANTÓN', 'PROVINCIA', 'Total Centros', 'Centros Públicos', 
                'Centros Privados', 'Centros por 10k hab'],
         style_kwds={
-            'fillOpacity': 0.6, 
+            'fillOpacity': 0.85, 
             'weight': 1,
             'color': 'gray'
         },
         highlight_kwds={
-            'fillOpacity': 0.9,
+            'fillOpacity': 0.85,
             'weight': 3,
             'color': 'black'
         },
@@ -326,13 +326,13 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
             
             folium.CircleMarker(
                 location=[centro['LATITUD'], centro['LONGITUD']],
-                radius=5,
+                radius=4,
                 popup=folium.Popup(contenido, max_width=200, lazy=True),
                 tooltip=centro['CENTRO_EDU'],
                 color='#3388ff',
                 fill=True,
                 fillColor='#3388ff',
-                fillOpacity=0.6,
+                fillOpacity=0.85,
                 weight=1
             ).add_to(marcadores_centros_publicos)
         
@@ -353,13 +353,13 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
             
             folium.CircleMarker(
                 location=[centro['LATITUD'], centro['LONGITUD']],
-                radius=5,
+                radius=4,
                 popup=folium.Popup(contenido, max_width=200, lazy=True),
                 tooltip=centro['CENTRO_EDU'],
                 color='#ff6b6b',
                 fill=True,
                 fillColor='#ff6b6b',
-                fillOpacity=0.6,
+                fillOpacity=0.85,
                 weight=1
             ).add_to(marcadores_centros_privados)
         
