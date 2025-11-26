@@ -268,10 +268,9 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
         legend=True,
         legend_kwds={'caption': 'Densidad de centros educativos (centros/km²)'},
         tooltip=['CANTÓN', 'PROVINCIA', 'Total Centros', 'Centros Públicos', 
-                 'Centros Privados', 'Densidad (centros/km²)', 'Centros por 10k hab',
-                 'Área (km²)', 'Densidad Poblacional (hab/km²)'],
+                 'Centros Privados', 'Densidad (centros/km²)'],
         popup=['CANTÓN', 'PROVINCIA', 'Total Centros', 'Centros Públicos', 
-               'Centros Privados', 'Densidad (centros/km²)', 'Centros por 10k hab'],
+               'Centros Privados', 'Densidad (centros/km²)'],
         style_kwds={
             'fillOpacity': 0.6,
             'weight': 1,
@@ -294,12 +293,11 @@ def crear_mapa(cantones_gdf, centros_educativos, tipo_institucion='Todos'):
         legend=True,
         legend_kwds={'caption': 'Centros educativos por 10,000 habitantes'},
         tooltip=['CANTÓN', 'PROVINCIA', 'Total Centros', 'Centros Públicos', 
-                 'Centros Privados', 'Densidad (centros/km²)', 'Centros por 10k hab',
-                 'Área (km²)', 'Densidad Poblacional (hab/km²)'],
+                 'Centros Privados', 'Centros por cada 10k habitantes', 'Densidad poblacional (hab/km²)'],
         popup=['CANTÓN', 'PROVINCIA', 'Total Centros', 'Centros Públicos', 
-               'Centros Privados', 'Densidad (centros/km²)', 'Centros por 10k hab'],
+               'Centros Privados', 'Centros por cada 10k habitantes'],
         style_kwds={
-            'fillOpacity': 0.6,
+            'fillOpacity': 0.6, 
             'weight': 1,
             'color': 'gray'
         },
