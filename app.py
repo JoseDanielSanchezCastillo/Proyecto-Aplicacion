@@ -674,7 +674,7 @@ def fragmento_busqueda(centros_gdf):
             st_folium(mapa, width='stretch', height=500, returned_objects=[])
             
 def main():
-    st.title("Análisis de centros educativos de Costa Rica")
+    st.title("Análisis de Centros Educativos de Costa Rica")
 
     # Cargar datos de la aplicación
     cantones_gdf, centros_gdf = cargar_datos()
